@@ -289,7 +289,9 @@ function showTranslationDialog(originalText, translatedText, sourceLang, targetL
     
     const sourceDisplay = langNames[sourceLang] || sourceLang;
     const targetDisplay = langNames[targetLang] || targetLang;
-    const serviceDisplay = service === 'google' ? 'Google Translate' : 'ChatGPT';
+    const serviceDisplay = service === 'google' 
+      ? 'Google Translate' 
+      : `ChatGPT (${translatedText.model || 'Developer mode'})`;
     langInfo = `
       <div style="background: #f5f5f5; padding: 8px 12px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; color: #666;">
         <div>${sourceDisplay} → ${targetDisplay}</div>

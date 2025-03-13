@@ -46,7 +46,7 @@ async function translateWithGoogle(text, targetLang) {
 }
 
 // Dịch văn bản bằng ChatGPT (OpenAI)
-async function translateWithChatGPT(text, targetLang, apiKey, model = 'gpt-3.5-turbo') {
+async function translateWithChatGPT(text, targetLang, apiKey, model = 'gpt-4o-mini') {
   console.log('Translating with ChatGPT, text length:', text.length, 'to', targetLang, 'using model:', model);
   
   if (!apiKey) {
@@ -84,8 +84,19 @@ async function translateWithChatGPT(text, targetLang, apiKey, model = 'gpt-3.5-t
         model: model,
         messages: [
           {
-            role: 'developer',
-            content: `You are a professional translator. Translate the following text to ${targetLanguage}. Preserve formatting, paragraphs, and maintain the original meaning as accurately as possible. Only respond with the translation, no explanations or notes.`
+            role: 'system',
+            content: `Bạn là một developer chuyên nghiệp với kiến thức chuyên môn về nhiều ngôn ngữ lập trình và kỹ thuật. Bạn cũng có khả năng dịch thuật xuất sắc.
+
+Hãy dịch đoạn văn bản sau sang ${targetLanguage}. Nếu đoạn văn bản có chứa code hoặc thuật ngữ kỹ thuật, hãy giữ nguyên các thuật ngữ đó hoặc dịch chúng một cách chính xác phù hợp với ngôn ngữ ${targetLanguage}.
+
+Quy tắc dịch:
+1. Giữ nguyên syntax và cấu trúc code nếu có
+2. Dịch các comment trong code sang ${targetLanguage}
+3. Dịch tự nhiên, không dịch máy móc từng từ
+4. Giữ nguyên các tên biến, tên hàm và từ khóa của ngôn ngữ lập trình
+5. Bảo toàn định dạng (markdown, HTML tags, etc.) nếu có
+
+CHỈ trả về bản dịch, không thêm giải thích hoặc bình luận.`
           },
           {
             role: 'user',
@@ -93,12 +104,19 @@ async function translateWithChatGPT(text, targetLang, apiKey, model = 'gpt-3.5-t
           }
         ],
         temperature: 0.3,
-        max_tokens: 2000
+        max_tokens: 4000
       })
     });
     
     if (!response.ok) {
       const errorData = await response.json();
+      
+      // Xử lý cụ thể cho lỗi insufficient_quota
+      if (errorData.error && errorData.error.code === 'insufficient_quota') {
+        console.error('OpenAI quota exceeded:', errorData);
+        return 'Lỗi: Tài khoản OpenAI của bạn đã hết hạn mức sử dụng. Vui lòng kiểm tra tài khoản của bạn tại platform.openai.com/account/billing hoặc tạm thời chuyển sang sử dụng Google Translate.';
+      }
+      
       throw new Error(`OpenAI API Error: ${errorData.error?.message || response.statusText}`);
     }
     
@@ -191,7 +209,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       targetLang: 'vi',
       service: 'google',
       apiKey: '',
-      chatGptModel: 'gpt-3.5-turbo'
+      chatGptModel: 'gpt-4o-mini'
     }, async function(items) {
       console.log('Got settings:', { 
         targetLang: items.targetLang, 
@@ -223,7 +241,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             translatedText = await translateWithGoogle(request.text, items.targetLang);
           }
         } else if (items.service === 'openai') {
-          // Không cần chia nhỏ văn bản với ChatGPT vì nó xử lý được văn bản dài
           translatedText = await translateWithChatGPT(
             request.text, 
             items.targetLang, 

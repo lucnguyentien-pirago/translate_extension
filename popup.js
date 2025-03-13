@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     targetLang: 'vi',
     service: 'google',
     apiKey: '',
-    chatGptModel: 'gpt-3.5-turbo'
+    chatGptModel: 'gpt-4o-mini'
   }, function(items) {
     targetLangSelect.value = items.targetLang;
     serviceSelect.value = items.service;
@@ -59,10 +59,10 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateServiceInfo(service) {
     if (service === 'openai') {
       apiKeyContainer.style.display = 'block';
-      serviceTip.textContent = 'OpenAI cung cấp khả năng dịch chính xác nhưng cần API key.';
+      serviceTip.innerHTML = 'ChatGPT với gpt-4o-mini cung cấp khả năng dịch thuật chuyên nghiệp, đặc biệt hiệu quả với nội dung kỹ thuật và code. Yêu cầu API key.';
     } else {
       apiKeyContainer.style.display = 'none';
-      serviceTip.textContent = 'Google Translate hỗ trợ dịch miễn phí với giới hạn.';
+      serviceTip.innerHTML = 'Google Translate dịch nhanh, miễn phí nhưng có thể thiếu chính xác với các thuật ngữ kỹ thuật.';
     }
   }
   
