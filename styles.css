@@ -1,0 +1,92 @@
+#quick-translate-btn {
+  position: fixed;
+  z-index: 10000;
+  padding: 5px 10px;
+  background: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+#quick-translate-btn:hover {
+  background: #3367d6;
+}
+
+.translation-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  z-index: 10001;
+  font-family: Arial, sans-serif;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.dialog-content {
+  padding: 20px;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.dialog-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.close-btn {
+  cursor: pointer;
+  font-size: 22px;
+  color: #666;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+
+.lang-info {
+  background: #f5f5f5;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #666;
+}
+
+.original-text, .translated-text {
+  margin-bottom: 15px;
+}
+
+.original-text h3, .translated-text h3 {
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #666;
+}
+
+.original-text p, .translated-text p {
+  margin: 0;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 4px;
+  line-height: 1.5;
+}
+
+.translated-text p {
+  background: #ebf3ff;
+} 
