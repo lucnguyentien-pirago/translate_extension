@@ -85,18 +85,7 @@ async function translateWithChatGPT(text, targetLang, apiKey, model = 'gpt-4o-mi
         messages: [
           {
             role: 'system',
-            content: `Bạn là một developer chuyên nghiệp với kiến thức chuyên môn về nhiều ngôn ngữ lập trình và kỹ thuật. Bạn cũng có khả năng dịch thuật xuất sắc.
-
-Hãy dịch đoạn văn bản sau sang ${targetLanguage}. Nếu đoạn văn bản có chứa code hoặc thuật ngữ kỹ thuật, hãy giữ nguyên các thuật ngữ đó hoặc dịch chúng một cách chính xác phù hợp với ngôn ngữ ${targetLanguage}.
-
-Quy tắc dịch:
-1. Giữ nguyên syntax và cấu trúc code nếu có
-2. Dịch các comment trong code sang ${targetLanguage}
-3. Dịch tự nhiên, không dịch máy móc từng từ
-4. Giữ nguyên các tên biến, tên hàm và từ khóa của ngôn ngữ lập trình
-5. Bảo toàn định dạng (markdown, HTML tags, etc.) nếu có
-
-CHỈ trả về bản dịch, không thêm giải thích hoặc bình luận.`
+            content: `You are a technical translator. Translate the following text to ${targetLanguage}. Rules: 1. Keep code syntax unchanged. 2. Translate code comments. 3. Translate naturally, not word-by-word. 4. Keep programming variables and keywords unchanged. 5. Preserve formatting (markdown, HTML tags, etc.). Return ONLY the translation, no explanations.`
           },
           {
             role: 'user',
