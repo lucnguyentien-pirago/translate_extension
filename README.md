@@ -1,17 +1,3 @@
-<think>Tôi sẽ viết một file README.md toàn diện cho extension dịch thuật này. README sẽ bao gồm:
-
-1. Giới thiệu về extension
-2. Tính năng chính
-3. Cách cài đặt
-4. Cách sử dụng
-5. Hướng dẫn lấy API key từ OpenAI
-6. Cách thêm API key vào extension
-7. Giải thích về các mô hình ChatGPT
-8. Xử lý sự cố thường gặp
-9. Thông tin bổ sung 
-
-Tất cả sẽ được viết bằng tiếng Việt, dễ hiểu và có hình ảnh minh họa (tôi sẽ chỉ mô tả vị trí đặt hình ảnh).</think># Quick Translator - Công cụ dịch thuật thông minh
-
 ## Giới thiệu
 
 Quick Translator là extension dịch thuật giúp bạn dễ dàng dịch văn bản được chọn trên bất kỳ trang web nào. Extension hỗ trợ dịch với Google Translate (miễn phí) và OpenAI ChatGPT (cần API key) để mang lại kết quả dịch thuật chính xác và tự nhiên.
@@ -26,21 +12,62 @@ Quick Translator là extension dịch thuật giúp bạn dễ dàng dịch văn
 - Tự động phát hiện ngôn ngữ nguồn
 - Hiển thị kết quả trong dialog dễ đọc
 
-## Cài đặt
+## Yêu cầu hệ thống
 
-### Phương pháp 1: Cài đặt từ thư mục source code
+- Node.js (phiên bản 14.x trở lên)
+- npm hoặc yarn
 
-1. Tải xuống và giải nén thư mục extension
-2. Mở Chrome và truy cập `chrome://extensions/`
-3. Bật chế độ "Developer mode" ở góc trên bên phải
-4. Nhấn "Load unpacked" và chọn thư mục chứa extension
-5. Extension sẽ được cài đặt và sẵn sàng sử dụng
+## Cài đặt và Phát triển
 
-### Phương pháp 2: Cài đặt từ Chrome Web Store (nếu có)
+### Cài đặt môi trường phát triển
 
-1. Truy cập [Quick Translator trên Chrome Web Store](#) (Thêm link sau khi đăng tải)
-2. Nhấn "Add to Chrome"
-3. Xác nhận cài đặt
+1. Clone repository về máy của bạn:
+```bash
+git clone https://github.com/lucnguyentien-pirago/translate_extension.git
+```
+
+2. Cài đặt các dependencies:
+```bash
+npm install
+# hoặc
+yarn install
+```
+
+### Build extension
+
+Để tạo bản build sẵn sàng để sử dụng:
+
+```bash
+npm run build
+# hoặc
+yarn build
+```
+
+Sau khi build thành công, thư mục `dist` sẽ chứa các file đã được đóng gói, sẵn sàng để cài đặt vào Chrome.
+
+### Cài đặt extension từ thư mục build
+
+1. Mở Chrome và truy cập `chrome://extensions/`
+2. Bật chế độ "Developer mode" ở góc trên bên phải
+3. Nhấn "Load unpacked" và chọn thư mục `dist` được tạo ra sau khi build
+4. Extension sẽ được cài đặt và sẵn sàng sử dụng
+
+## Cấu trúc Project
+
+```
+quick-translator/
+├── src/                     # Mã nguồn
+│   ├── background/          # Background scripts
+│   ├── content/             # Content scripts
+│   ├── popup/               # Popup UI
+│   ├── services/            # Các dịch vụ dịch thuật
+│   └── utils/               # Tiện ích và hàm trợ giúp
+├── public/                  # Tài nguyên tĩnh (icons, v.v.)
+├── dist/                    # Thư mục chứa build cuối cùng
+├── webpack.config.js        # Cấu hình webpack
+├── package.json             # Dependencies và scripts
+└── README.md                # Tài liệu hướng dẫn
+```
 
 ## Cách sử dụng
 
@@ -76,8 +103,6 @@ Lưu ý: OpenAI cung cấp $5 credit miễn phí cho người dùng mới. Sau �
 6. Quay lại tab "Cài đặt chung" và chọn "OpenAI ChatGPT" trong mục "Dịch vụ dịch thuật"
 7. Nhấp "Lưu cài đặt" một lần nữa
 
-![Minh họa cách thêm API key]
-
 ## Cấu hình Extension
 
 ### Thay đổi ngôn ngữ đích
@@ -102,7 +127,29 @@ Trong tab "API", bạn có thể chọn các mô hình khác nhau:
 - **GPT-4**: Chất lượng cao nhất, nhưng đắt hơn
 - **GPT-4o**: Phiên bản mới nhất, hỗ trợ nhiều khả năng
 
+## Phát triển tùy chỉnh
+
+### Thêm dịch vụ dịch thuật mới
+
+Để thêm một dịch vụ dịch thuật mới, hãy tạo một module mới trong thư mục `src/services` và đăng ký nó trong `src/services/index.js`. Xem các file hiện có để hiểu cấu trúc.
+
+### Tùy chỉnh giao diện
+
+Giao diện popup được xây dựng bằng HTML/CSS và có thể được chỉnh sửa trong thư mục `src/popup`. Các styles được quản lý bằng webpack.
+
+### Hot Reload trong quá trình phát triển
+
+Dự án được cấu hình với chức năng hot reload khi phát triển. Chạy `npm run dev` sẽ theo dõi các thay đổi và tự động rebuild extension.
+
 ## Xử lý sự cố
+
+### Lỗi build
+
+Nếu gặp lỗi khi chạy `npm run build`:
+
+1. Kiểm tra phiên bản Node.js (phải là 14.x trở lên)
+2. Xóa thư mục `node_modules` và chạy lại `npm install`
+3. Kiểm tra lỗi cú pháp trong code
 
 ### API key không hoạt động
 
@@ -127,6 +174,16 @@ Thông báo này xuất hiện khi:
 - Làm mới trang web (F5)
 - Kiểm tra xem extension đã được kích hoạt chưa (chrome://extensions/)
 - Tắt và bật lại extension
+
+## Đóng góp
+
+Contributions được hoan nghênh! Nếu bạn muốn đóng góp cho dự án:
+
+1. Fork repository
+2. Tạo nhánh mới (`git checkout -b feature/amazing-feature`)
+3. Commit các thay đổi (`git commit -m 'Add some amazing feature'`)
+4. Push lên nhánh của bạn (`git push origin feature/amazing-feature`)
+5. Mở Pull Request
 
 ## Thông tin bổ sung
 
