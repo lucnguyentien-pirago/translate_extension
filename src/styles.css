@@ -1,3 +1,6 @@
+/* Base styles for the Quick Translator extension */
+
+/* Translate button */
 #quick-translate-btn {
   position: fixed;
   z-index: 10000;
@@ -10,12 +13,45 @@
   font-family: Arial, sans-serif;
   font-size: 14px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: background-color 0.2s;
 }
 
 #quick-translate-btn:hover {
   background: #3367d6;
 }
 
+/* Loading dialog */
+#translation-loading-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  z-index: 99999;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #4285f4;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  animation: spin 1s linear infinite;
+}
+
+/* Translation dialog */
 .translation-dialog {
   position: fixed;
   top: 50%;
@@ -54,6 +90,7 @@
   cursor: pointer;
   font-size: 22px;
   color: #666;
+  transition: color 0.2s;
 }
 
 .close-btn:hover {
@@ -67,6 +104,11 @@
   margin-bottom: 15px;
   font-size: 14px;
   color: #666;
+}
+
+.service-info {
+  margin-top: 5px;
+  font-size: 12px;
 }
 
 .original-text, .translated-text {
@@ -85,8 +127,16 @@
   background: #f9f9f9;
   border-radius: 4px;
   line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .translated-text p {
   background: #ebf3ff;
-} 
+}
+
+/* Animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
