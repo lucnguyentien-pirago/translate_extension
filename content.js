@@ -9,6 +9,23 @@ document.addEventListener('mousemove', function(e) {
   lastMousePosition.y = e.clientY;
 });
 
+// Kiểm tra an toàn cho tất cả Chrome Extension APIs
+try {
+  // Kiểm tra kết nối với background script và xử lý lỗi
+  if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.id) {
+    console.error('Chrome runtime not available. Extension may be reloaded or disabled.');
+  }
+
+  // Xử lý sự kiện khi extension bị tải lại hoặc bị vô hiệu hóa
+  if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onDisconnect) {
+    chrome.runtime.onDisconnect.addListener(function() {
+      console.log('Extension disconnected or reloaded');
+    });
+  }
+} catch (error) {
+  console.error('Error initializing Chrome extension APIs:', error);
+}
+
 // Hàm an toàn để lấy text đã chọn
 function getSelectedText() {
   try {
@@ -92,29 +109,50 @@ function createTranslateButton(mouseX, mouseY, selectedText) {
     
     console.log('Sending message to background script');
     console.log('Text to translate (length):', selectedText.length);
-    chrome.runtime.sendMessage({
-      action: 'translate',
-      text: selectedText
-    }, function(response) {
-      console.log('Got response from background:', response ? 'success' : 'failure');
-      
-      // Xóa loading dialog
+    
+    // Kiểm tra xem chrome.runtime có tồn tại không
+    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+      chrome.runtime.sendMessage({
+        action: 'translate',
+        text: selectedText
+      }, function(response) {
+        console.log('Got response from background:', response ? 'success' : 'failure');
+        
+        // Xóa loading dialog
+        removeLoadingDialog();
+        
+        if (response) {
+          console.log('Translated text sample:', response.translatedText.substring(0, 50));
+          showTranslationDialog(selectedText, response.translatedText, response.detectedLang, response.targetLang, response.service);
+        } else {
+          console.error('No response or error occurred');
+          showTranslationDialog(selectedText, 'Không thể dịch. Vui lòng thử lại.', '', '', 'google');
+        }
+        
+        // Xóa button sau khi dịch
+        if (translateButton) {
+          translateButton.remove();
+          translateButton = null;
+        }
+      });
+    } else {
+      // Nếu chrome.runtime không tồn tại, hiển thị thông báo lỗi
+      console.error('chrome.runtime is undefined or sendMessage is not available');
       removeLoadingDialog();
-      
-      if (response) {
-        console.log('Translated text sample:', response.translatedText.substring(0, 50));
-        showTranslationDialog(selectedText, response.translatedText, response.detectedLang, response.targetLang);
-      } else {
-        console.error('No response or error occurred');
-        showTranslationDialog(selectedText, 'Không thể dịch. Vui lòng thử lại.', '', '');
-      }
+      showTranslationDialog(
+        selectedText, 
+        'Lỗi: Không thể kết nối với background script. Vui lòng tải lại trang và thử lại.', 
+        '', 
+        '', 
+        'google'
+      );
       
       // Xóa button sau khi dịch
       if (translateButton) {
         translateButton.remove();
         translateButton = null;
       }
-    });
+    }
   });
 
   console.log('Appending button to body');
@@ -199,11 +237,12 @@ document.addEventListener('mouseup', function(e) {
   }, 10); // Đợi một chút để selection được xử lý hoàn toàn
 });
 
-// Hiển thị dialog với kết quả dịch
-function showTranslationDialog(originalText, translatedText, sourceLang, targetLang) {
+// Hàm hiển thị kết quả dịch
+function showTranslationDialog(originalText, translatedText, sourceLang, targetLang, service = 'google') {
   console.log('Showing translation dialog');
   console.log('Original text length:', originalText.length);
   console.log('Translated text length:', translatedText.length);
+  console.log('Service used:', service);
   
   // Xóa dialog cũ nếu có
   const oldDialog = document.querySelector('.translation-dialog');
@@ -238,12 +277,25 @@ function showTranslationDialog(originalText, translatedText, sourceLang, targetL
       'ja': 'Tiếng Nhật',
       'ko': 'Tiếng Hàn',
       'zh-CN': 'Tiếng Trung (Giản thể)',
-      'zh-TW': 'Tiếng Trung (Phồn thể)'
+      'zh-TW': 'Tiếng Trung (Phồn thể)',
+      'es': 'Tiếng Tây Ban Nha',
+      'it': 'Tiếng Ý',
+      'ru': 'Tiếng Nga',
+      'pt': 'Tiếng Bồ Đào Nha',
+      'ar': 'Tiếng Ả Rập',
+      'hi': 'Tiếng Hindi',
+      'th': 'Tiếng Thái'
     };
     
     const sourceDisplay = langNames[sourceLang] || sourceLang;
     const targetDisplay = langNames[targetLang] || targetLang;
-    langInfo = `<div style="background: #f5f5f5; padding: 8px 12px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; color: #666;">${sourceDisplay} → ${targetDisplay}</div>`;
+    const serviceDisplay = service === 'google' ? 'Google Translate' : 'ChatGPT';
+    langInfo = `
+      <div style="background: #f5f5f5; padding: 8px 12px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; color: #666;">
+        <div>${sourceDisplay} → ${targetDisplay}</div>
+        <div style="margin-top: 5px; font-size: 12px;">Dịch bởi: ${serviceDisplay}</div>
+      </div>
+    `;
   }
   
   dialog.innerHTML = `
@@ -282,4 +334,15 @@ function showTranslationDialog(originalText, translatedText, sourceLang, targetL
   });
 }
 
-console.log('Quick Translator: Content script fully loaded and ready'); 
+console.log('Quick Translator: Content script fully loaded and ready');
+
+window.addEventListener('error', function(event) {
+  console.error('Global error caught:', event.error);
+});
+
+try {
+  // Code dễ lỗi
+} catch (error) {
+  console.error('Detailed error information:', error);
+  // Xử lý lỗi
+} 

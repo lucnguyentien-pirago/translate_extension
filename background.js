@@ -45,6 +45,77 @@ async function translateWithGoogle(text, targetLang) {
   }
 }
 
+// Dịch văn bản bằng ChatGPT (OpenAI)
+async function translateWithChatGPT(text, targetLang, apiKey, model = 'gpt-3.5-turbo') {
+  console.log('Translating with ChatGPT, text length:', text.length, 'to', targetLang, 'using model:', model);
+  
+  if (!apiKey) {
+    return 'Lỗi: Thiếu OpenAI API Key. Vui lòng cung cấp API Key trong phần cài đặt.';
+  }
+  
+  try {
+    const languageNames = {
+      'vi': 'Vietnamese',
+      'en': 'English',
+      'fr': 'French',
+      'de': 'German',
+      'ja': 'Japanese',
+      'ko': 'Korean',
+      'zh-CN': 'Simplified Chinese',
+      'zh-TW': 'Traditional Chinese',
+      'es': 'Spanish',
+      'it': 'Italian',
+      'ru': 'Russian',
+      'pt': 'Portuguese',
+      'ar': 'Arabic',
+      'hi': 'Hindi',
+      'th': 'Thai'
+    };
+    
+    const targetLanguage = languageNames[targetLang] || targetLang;
+    
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          {
+            role: 'developer',
+            content: `You are a professional translator. Translate the following text to ${targetLanguage}. Preserve formatting, paragraphs, and maintain the original meaning as accurately as possible. Only respond with the translation, no explanations or notes.`
+          },
+          {
+            role: 'user',
+            content: text
+          }
+        ],
+        temperature: 0.3,
+        max_tokens: 2000
+      })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`OpenAI API Error: ${errorData.error?.message || response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('ChatGPT response received');
+    
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      throw new Error('Unexpected response structure from OpenAI');
+    }
+    
+    return data.choices[0].message.content.trim();
+  } catch (error) {
+    console.error('ChatGPT translation error:', error);
+    return 'Lỗi khi dịch với ChatGPT: ' + error.message;
+  }
+}
+
 // Phát hiện ngôn ngữ của văn bản
 async function detectLanguage(text) {
   console.log('Detecting language for text length:', text.length);
@@ -119,14 +190,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     chrome.storage.sync.get({
       targetLang: 'vi',
       service: 'google',
-      apiKey: ''
+      apiKey: '',
+      chatGptModel: 'gpt-3.5-turbo'
     }, async function(items) {
-      console.log('Got settings:', items);
+      console.log('Got settings:', { 
+        targetLang: items.targetLang, 
+        service: items.service, 
+        apiKey: items.apiKey ? '******' : 'not set',
+        model: items.chatGptModel
+      });
       
       let translatedText = '';
       let detectedLang = null;
       
       try {
+        // Phát hiện ngôn ngữ với Google (bất kể dịch vụ nào được sử dụng)
+        detectedLang = await detectLanguage(request.text);
+        
         if (items.service === 'google') {
           // Chia nhỏ văn bản nếu quá dài
           if (request.text.length > 1000) {
@@ -142,13 +222,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           } else {
             translatedText = await translateWithGoogle(request.text, items.targetLang);
           }
-          
-          detectedLang = await detectLanguage(request.text);
-        } else if (items.service === 'openai' && items.apiKey) {
-          translatedText = 'Tính năng dịch với OpenAI đang được phát triển';
-          console.log('OpenAI translation not implemented yet');
+        } else if (items.service === 'openai') {
+          // Không cần chia nhỏ văn bản với ChatGPT vì nó xử lý được văn bản dài
+          translatedText = await translateWithChatGPT(
+            request.text, 
+            items.targetLang, 
+            items.apiKey,
+            items.chatGptModel
+          );
         } else {
-          translatedText = 'Không thể dịch - Vui lòng kiểm tra cài đặt';
+          translatedText = 'Không thể dịch - Dịch vụ không hợp lệ';
           console.log('Invalid translation service configuration');
         }
         
@@ -157,7 +240,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           originalText: request.text,
           translatedText: translatedText,
           detectedLang: detectedLang,
-          targetLang: items.targetLang
+          targetLang: items.targetLang,
+          service: items.service
         });
       } catch (error) {
         console.error('Error in background processing:', error);
@@ -165,7 +249,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           originalText: request.text,
           translatedText: 'Lỗi xử lý: ' + error.message,
           detectedLang: null,
-          targetLang: items.targetLang
+          targetLang: items.targetLang,
+          service: items.service
         });
       }
     });

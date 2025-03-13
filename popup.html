@@ -63,36 +63,99 @@
       background: #f8d7da;
       color: #721c24;
     }
+    
+    .tab-container {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 15px;
+    }
+    
+    .tab {
+      padding: 8px 15px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-radius: 4px 4px 0 0;
+      margin-right: 5px;
+    }
+    
+    .tab.active {
+      border: 1px solid #ddd;
+      border-bottom: 1px solid white;
+      margin-bottom: -1px;
+      background-color: white;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .service-tip {
+      margin-top: 5px;
+      font-size: 12px;
+      color: #666;
+    }
   </style>
 </head>
 <body>
   <h1>Quick Translator</h1>
   
-  <div class="form-group">
-    <label for="targetLang">Ngôn ngữ đích:</label>
-    <select id="targetLang">
-      <option value="vi">Tiếng Việt</option>
-      <option value="en">Tiếng Anh</option>
-      <option value="fr">Tiếng Pháp</option>
-      <option value="de">Tiếng Đức</option>
-      <option value="ja">Tiếng Nhật</option>
-      <option value="ko">Tiếng Hàn</option>
-      <option value="zh-CN">Tiếng Trung (Giản thể)</option>
-      <option value="zh-TW">Tiếng Trung (Phồn thể)</option>
-    </select>
+  <div class="tab-container">
+    <div class="tab active" data-tab="general">Cài đặt chung</div>
+    <div class="tab" data-tab="api">API</div>
   </div>
   
-  <div class="form-group">
-    <label for="translationService">Dịch vụ dịch thuật:</label>
-    <select id="translationService">
-      <option value="google">Google Translate (Miễn phí)</option>
-      <option value="openai" disabled>OpenAI (Cần API Key)</option>
-    </select>
+  <div class="tab-content active" id="general-tab">
+    <div class="form-group">
+      <label for="targetLang">Ngôn ngữ đích:</label>
+      <select id="targetLang">
+        <option value="vi">Tiếng Việt</option>
+        <option value="en">Tiếng Anh</option>
+        <option value="fr">Tiếng Pháp</option>
+        <option value="de">Tiếng Đức</option>
+        <option value="ja">Tiếng Nhật</option>
+        <option value="ko">Tiếng Hàn</option>
+        <option value="zh-CN">Tiếng Trung (Giản thể)</option>
+        <option value="zh-TW">Tiếng Trung (Phồn thể)</option>
+        <option value="es">Tiếng Tây Ban Nha</option>
+        <option value="it">Tiếng Ý</option>
+        <option value="ru">Tiếng Nga</option>
+        <option value="pt">Tiếng Bồ Đào Nha</option>
+        <option value="ar">Tiếng Ả Rập</option>
+        <option value="hi">Tiếng Hindi</option>
+        <option value="th">Tiếng Thái</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="translationService">Dịch vụ dịch thuật:</label>
+      <select id="translationService">
+        <option value="google">Google Translate (Miễn phí)</option>
+        <option value="openai">OpenAI ChatGPT (Cần API Key)</option>
+      </select>
+      <div id="serviceTip" class="service-tip">Google Translate hỗ trợ dịch miễn phí với giới hạn.</div>
+    </div>
   </div>
   
-  <div class="form-group" id="apiKeyContainer" style="display: none;">
-    <label for="apiKey">API Key:</label>
-    <input type="password" id="apiKey" placeholder="Nhập API Key của bạn">
+  <div class="tab-content" id="api-tab">
+    <div class="form-group" id="apiKeyContainer">
+      <label for="apiKey">OpenAI API Key:</label>
+      <input type="password" id="apiKey" placeholder="Nhập OpenAI API Key của bạn">
+      <div class="service-tip">
+        Bạn có thể lấy API key từ <a href="https://platform.openai.com/api-keys" target="_blank">trang OpenAI</a>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="chatGptModel">ChatGPT Model:</label>
+      <select id="chatGptModel">
+        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Nhanh, rẻ)</option>
+        <option value="gpt-4o-mini">GPT-4o-mini (Chính xác hơn, đắt hơn)</option>
+      </select>
+    </div>
   </div>
   
   <button id="saveButton">Lưu cài đặt</button>
@@ -100,4 +163,4 @@
   
   <script src="popup.js"></script>
 </body>
-</html> 
+</html>

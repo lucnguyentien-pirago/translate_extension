@@ -2,13 +2,14 @@
   "manifest_version": 3,
   "name": "Quick Translator",
   "version": "1.0",
-  "description": "Translate selected text instantly, including Japanese and other languages",
+  "description": "Translate selected text instantly with Google Translate or ChatGPT",
   "permissions": [
     "activeTab",
     "storage"
   ],
   "host_permissions": [
-    "https://translate.googleapis.com/*"
+    "https://translate.googleapis.com/*",
+    "https://api.openai.com/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -22,14 +23,20 @@
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"],
-      "css": ["styles.css"],
-      "run_at": "document_end"
+      "run_at": "document_end",
+      "all_frames": false
     }
   ],
   "background": {
     "service_worker": "background.js",
     "type": "module"
   },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
