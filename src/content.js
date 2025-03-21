@@ -173,37 +173,35 @@ function showTranslationDialog(originalText, translatedText, sourceLang, targetL
   const dialog = document.createElement('div');
   dialog.className = 'translation-dialog';
 
-  // Prepare language info
-  let langInfo = '';
-  if (sourceLang) {
-    const sourceDisplay = LANGUAGE_NAMES[sourceLang] || sourceLang;
-    const targetDisplay = LANGUAGE_NAMES[targetLang] || targetLang;
-    const serviceDisplay = service === 'google'
-        ? 'Google Translate'
-        : `ChatGPT (${translatedText.model || 'Developer mode'})`;
-
-    langInfo = `
-      <div class="lang-info">
-        <div>${sourceDisplay} → ${targetDisplay}</div>
-        <div style="margin-top: 5px; font-size: 12px;">Dịch bởi: ${serviceDisplay}</div>
-      </div>
-    `;
-  }
+  // // Prepare language info
+  // let langInfo = '';
+  // if (sourceLang) {
+  //   const sourceDisplay = LANGUAGE_NAMES[sourceLang] || sourceLang;
+  //   const targetDisplay = LANGUAGE_NAMES[targetLang] || targetLang;
+  //   const serviceDisplay = service === 'google'
+  //       ? 'Google Translate'
+  //       : `ChatGPT (${translatedText.model || 'Developer mode'})`;
+  //
+  //   langInfo = `
+  //     <div class="lang-info">
+  //       <div>${sourceDisplay} → ${targetDisplay}</div>
+  //       <div style="margin-top: 5px; font-size: 12px;">Dịch bởi: ${serviceDisplay}</div>
+  //     </div>
+  //   `;
+  // }
 
   dialog.innerHTML = `
-    <div style="padding: 20px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
-        <span style="font-size: 18px; font-weight: bold;">Kết quả dịch</span>
-        <span class="close-btn" style="cursor: pointer; font-size: 22px; color: #666;">&times;</span>
-      </div>
-      ${langInfo}
+    <div style="padding: 20px; color-scheme: light; background-color: #f3f4f6; font-family: 'Arial', sans-serif;">
       <div style="margin-bottom: 15px;">
-        <h3 style="font-size: 14px; margin-bottom: 8px; color: #666;">Văn bản gốc:</h3>
-        <p style="margin: 0; padding: 10px; background: #f9f9f9; border-radius: 4px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; font-family: 'Arial', sans-serif;">${originalText}</p>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 14px; color: #737373;">Văn bản gốc:</h3>
+            <span class="close-btn" style="cursor: pointer; font-size: 22px; color: #666; margin-top: -35px">&times;</span>
+        </div>
+        <p style="margin: 0; padding: 10px; background: #9ca3af; border-radius: 4px; line-height: 1.5; white-space: pre-wrap; word-break: break-word;">${originalText}</p>
       </div>
       <div style="margin-bottom: 15px;">
-        <h3 style="font-size: 14px; margin-bottom: 8px; color: #666;">Bản dịch:</h3>
-        <p style="margin: 0; padding: 10px; background: #ebf3ff; border-radius: 4px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; font-family: 'Arial', sans-serif;">${translatedText}</p>
+        <h3 style="font-size: 14px; color: #737373;">Bản dịch:</h3>
+        <p style="margin: 0; padding: 10px; background: #9ca3af; border-radius: 4px; line-height: 1.5; white-space: pre-wrap; word-break: break-word;">${translatedText}</p>
       </div>
     </div>
   `;

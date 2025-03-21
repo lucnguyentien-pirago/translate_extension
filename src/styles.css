@@ -6,7 +6,7 @@
   z-index: 10000;
   padding: 5px 10px;
   background: #4285f4;
-  color: white;
+  color: white !important;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -26,13 +26,15 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: white;
+  background: white !important;
+  color: #333 !important;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   z-index: 99999;
   font-family: Arial, sans-serif;
   text-align: center;
+  color-scheme: light;
 }
 
 .loading-content {
@@ -57,7 +59,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: white;
+  background: white !important;
+  color: #333 !important;
   width: 80%;
   max-width: 500px;
   border-radius: 8px;
@@ -66,10 +69,17 @@
   font-family: Arial, sans-serif;
   max-height: 80vh;
   overflow-y: auto;
+  color-scheme: light;
+}
+
+.translation-dialog * {
+  color-scheme: light;
 }
 
 .dialog-content {
   padding: 20px;
+  background: white !important;
+  color: #333 !important;
 }
 
 .dialog-header {
@@ -79,36 +89,39 @@
   margin-bottom: 15px;
   padding-bottom: 10px;
   border-bottom: 1px solid #eee;
+  color: #333 !important;
 }
 
 .dialog-title {
   font-size: 18px;
   font-weight: bold;
+  color: #333 !important;
 }
 
 .close-btn {
   cursor: pointer;
   font-size: 22px;
-  color: #666;
+  color: #666 !important;
   transition: color 0.2s;
 }
 
 .close-btn:hover {
-  color: #000;
+  color: #000 !important;
 }
 
 .lang-info {
-  background: #f5f5f5;
+  background: #f5f5f5 !important;
   padding: 8px 12px;
   border-radius: 4px;
   margin-bottom: 15px;
   font-size: 14px;
-  color: #666;
+  color: #666 !important;
 }
 
 .service-info {
   margin-top: 5px;
   font-size: 12px;
+  color: #666 !important;
 }
 
 .original-text, .translated-text {
@@ -118,25 +131,70 @@
 .original-text h3, .translated-text h3 {
   font-size: 14px;
   margin-bottom: 8px;
-  color: #666;
+  color: #666 !important;
 }
 
 .original-text p, .translated-text p {
   margin: 0;
   padding: 10px;
-  background: #f9f9f9;
+  background: #f9f9f9 !important;
   border-radius: 4px;
   line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-word;
+  color: #333 !important;
 }
 
 .translated-text p {
-  background: #ebf3ff;
+  background: #ebf3ff !important;
+  color: #333 !important;
+}
+
+/* Ruby (furigana) styling */
+ruby {
+  display: inline-flex;
+  flex-direction: column-reverse;
+  line-height: 1;
+  text-align: center;
+}
+
+ruby > rt {
+  font-size: 0.6em;
+  line-height: 1.2;
+  text-align: center;
+  color: #666 !important;
+  transform: translateY(-4px);
+  white-space: nowrap;
+}
+
+/* Checkbox styling */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
+}
+
+.checkbox-container label {
+  display: inline;
+  font-weight: normal;
+  color: #333 !important;
 }
 
 /* Animation */
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Dark mode override */
+@media (prefers-color-scheme: dark) {
+  .translation-dialog,
+  .translation-dialog * {
+    color-scheme: light !important;
+  }
 }
