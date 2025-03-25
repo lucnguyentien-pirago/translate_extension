@@ -193,7 +193,7 @@ function showTranslationDialog(originalText, translatedText, sourceLang, targetL
   dialog.innerHTML = `
     <div style="padding: 20px; color-scheme: light; background-color: #f3f4f6; font-family: 'Arial', sans-serif;">
       <div style="margin-bottom: 15px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center;" class="dialog-header">
             <h3 style="font-size: 14px; color: #737373;">Văn bản gốc:</h3>
             <span class="close-btn" style="cursor: pointer; font-size: 22px; color: #666; margin-top: -35px">&times;</span>
         </div>
@@ -208,6 +208,9 @@ function showTranslationDialog(originalText, translatedText, sourceLang, targetL
 
   document.body.appendChild(dialog);
 
+  // Thêm chức năng kéo thả (drag)
+  makeDraggable(dialog);
+
   // Close button handler
   dialog.querySelector('.close-btn').onclick = () => dialog.remove();
 
@@ -218,6 +221,49 @@ function showTranslationDialog(originalText, translatedText, sourceLang, targetL
       document.removeEventListener('mousedown', closeOnClickOutside);
     }
   });
+}
+
+// Hàm để làm cho một phần tử có thể kéo thả
+function makeDraggable(element) {
+  let pos1 = 0, pos2 = 0;
+  const header = element.querySelector('.dialog-header') || element;
+
+  header.style.cursor = 'move';
+  header.onmousedown = dragMouseDown;
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    
+    // Lấy vị trí chuột và vị trí dialog
+    const rect = element.getBoundingClientRect();
+    pos1 = e.clientX - rect.left;
+    pos2 = e.clientY - rect.top;
+    
+    document.onmouseup = closeDragElement;
+    document.onmousemove = elementDrag;
+    element.classList.add('dragging');
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    
+    // Tính toán vị trí mới
+    const newLeft = e.clientX - pos1;
+    const newTop = e.clientY - pos2;
+    
+    // Đặt vị trí mới cho phần tử
+    element.style.top = newTop + "px";
+    element.style.left = newLeft + "px";
+    element.style.transform = 'none';
+  }
+
+  function closeDragElement() {
+    document.onmouseup = null;
+    document.onmousemove = null;
+    element.classList.remove('dragging');
+  }
 }
 
 // Handle global errors

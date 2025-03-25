@@ -70,6 +70,8 @@
   max-height: 80vh;
   overflow-y: auto;
   color-scheme: light;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .translation-dialog * {
@@ -197,4 +199,10 @@ ruby > rt {
   .translation-dialog * {
     color-scheme: light !important;
   }
+}
+
+/* Dialog đang được kéo */
+.translation-dialog.dragging {
+  opacity: 0.9;
+  transition: opacity 0.2s;
 }
