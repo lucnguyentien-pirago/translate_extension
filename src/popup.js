@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
     statusDiv: document.getElementById('status'),
     serviceTip: document.getElementById('serviceTip'),
     tabs: document.querySelectorAll('.tab'),
-    tabContents: document.querySelectorAll('.tab-content')
+    tabContents: document.querySelectorAll('.tab-content'),
+    closeOnClickOutsideCheckbox: document.getElementById('closeOnClickOutside')
   };
 
   // Tab switching
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
           elements.serviceSelect.value = settings.service;
           elements.apiKeyInput.value = settings.apiKey;
           elements.chatGptModelSelect.value = settings.chatGptModel;
+          elements.closeOnClickOutsideCheckbox.checked = settings.closeOnClickOutside;
 
           updateServiceInfo(settings.service);
         })
@@ -70,7 +72,8 @@ document.addEventListener('DOMContentLoaded', function() {
       targetLang: elements.targetLangSelect.value,
       service: elements.serviceSelect.value,
       apiKey: elements.apiKeyInput.value,
-      chatGptModel: elements.chatGptModelSelect.value
+      chatGptModel: elements.chatGptModelSelect.value,
+      closeOnClickOutside: elements.closeOnClickOutsideCheckbox.checked
     };
 
     storeSettings(settings)

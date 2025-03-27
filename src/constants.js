@@ -45,7 +45,8 @@ export const DEFAULT_SETTINGS = {
     targetLang: 'vi',
     service: 'google',
     apiKey: '',
-    chatGptModel: 'gpt-4o-mini'
+    chatGptModel: 'gpt-4o-mini',
+    closeOnClickOutside: true
 };
 
 // Debug flag (turn off in production)

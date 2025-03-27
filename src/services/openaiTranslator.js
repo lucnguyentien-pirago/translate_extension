@@ -71,7 +71,19 @@ class OpenAITranslator extends Translator {
       const data = await this.#callOpenAI([
         {
           role: 'system',
-          content: `You are a technical translator. Translate the following text to ${targetLanguage}. Rules: 1. Keep code syntax unchanged. 2. Translate code comments. 3. Translate naturally, not word-by-word. 4. Keep programming variables and keywords unchanged. 5. Preserve formatting (markdown, HTML tags, etc.). Return ONLY the translation, no explanations.`
+          content: `You are a technical translator. Translate the following text to ${targetLanguage}. 
+
+Rules:
+1. Keep code syntax unchanged.
+2. Translate code comments.
+3. Translate naturally, not word-by-word.
+4. Keep programming variables and keywords unchanged.
+5. Preserve formatting (markdown, HTML tags, etc.).
+6. Maintain all IT technical terms in their original English form (e.g., "instance method", "static method", "framework", "dependency injection", "middleware", etc.).
+7. Do not translate technical programming concepts, design patterns, or technology names.
+8. For acronyms like API, URL, HTTP, REST, etc., keep them in English.
+
+Return ONLY the translation, no explanations.`
         },
         {
           role: 'user',

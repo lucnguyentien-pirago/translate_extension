@@ -1,5 +1,5 @@
 // Import utilities and constants
-import { log, LANGUAGE_NAMES } from './constants.js';
+import { log, LANGUAGE_NAMES, DEFAULT_SETTINGS } from './constants.js';
 import { isChromeRuntimeAvailable, getSelectedText } from './utils.js';
 
 log('Quick Translator: Content script loaded');
@@ -173,23 +173,6 @@ function showTranslationDialog(originalText, translatedText, sourceLang, targetL
   const dialog = document.createElement('div');
   dialog.className = 'translation-dialog';
 
-  // // Prepare language info
-  // let langInfo = '';
-  // if (sourceLang) {
-  //   const sourceDisplay = LANGUAGE_NAMES[sourceLang] || sourceLang;
-  //   const targetDisplay = LANGUAGE_NAMES[targetLang] || targetLang;
-  //   const serviceDisplay = service === 'google'
-  //       ? 'Google Translate'
-  //       : `ChatGPT (${translatedText.model || 'Developer mode'})`;
-  //
-  //   langInfo = `
-  //     <div class="lang-info">
-  //       <div>${sourceDisplay} → ${targetDisplay}</div>
-  //       <div style="margin-top: 5px; font-size: 12px;">Dịch bởi: ${serviceDisplay}</div>
-  //     </div>
-  //   `;
-  // }
-
   dialog.innerHTML = `
     <div style="padding: 20px; color-scheme: light; background-color: #f3f4f6; font-family: 'Arial', sans-serif;">
       <div style="margin-bottom: 15px;">
@@ -214,13 +197,50 @@ function showTranslationDialog(originalText, translatedText, sourceLang, targetL
   // Close button handler
   dialog.querySelector('.close-btn').onclick = () => dialog.remove();
 
-  // Close on outside click
-  document.addEventListener('mousedown', function closeOnClickOutside(e) {
+  // Tạo hàm xử lý click outside
+  function closeOnClickOutside(e) {
+    // Đảm bảo dialog vẫn tồn tại trong DOM
+    if (!document.body.contains(dialog)) {
+      document.removeEventListener('mousedown', closeOnClickOutside);
+      return;
+    }
+    
+    // Kiểm tra nếu click bên ngoài dialog và không phải là nút dịch
     if (!dialog.contains(e.target) && e.target !== translateButton) {
+      log('Click outside dialog - closing');
       dialog.remove();
       document.removeEventListener('mousedown', closeOnClickOutside);
     }
+  }
+
+  // Kiểm tra cài đặt closeOnClickOutside
+  chrome.storage.sync.get(DEFAULT_SETTINGS, function(items) {
+    log('Cài đặt closeOnClickOutside:', items.closeOnClickOutside);
+    
+    // Đảm bảo dialog vẫn tồn tại trong DOM trước khi thêm event listener
+    if (items.closeOnClickOutside && document.body.contains(dialog)) {
+      // Thêm một độ trễ nhỏ để tránh xung đột với sự kiện mouseup
+      setTimeout(() => {
+        // Kiểm tra lại xem dialog có còn tồn tại không
+        if (document.body.contains(dialog)) {
+          log('Bật chức năng close on click outside');
+          document.addEventListener('mousedown', closeOnClickOutside);
+        }
+      }, 100);
+    } else {
+      log('Tắt chức năng close on click outside');
+    }
   });
+
+  //close on esc key
+  document.addEventListener('keydown', function closeOnEsc(e) {
+    if (e.key === 'Escape') {
+      dialog.remove();
+      document.removeEventListener('keydown', closeOnEsc);
+    }
+  });
+  
+  return dialog;
 }
 
 // Hàm để làm cho một phần tử có thể kéo thả
