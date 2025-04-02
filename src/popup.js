@@ -14,7 +14,11 @@ document.addEventListener('DOMContentLoaded', function() {
     serviceTip: document.getElementById('serviceTip'),
     tabs: document.querySelectorAll('.tab'),
     tabContents: document.querySelectorAll('.tab-content'),
-    closeOnClickOutsideCheckbox: document.getElementById('closeOnClickOutside')
+    closeOnClickOutsideCheckbox: document.getElementById('closeOnClickOutside'),
+    sourceLangSelect: document.getElementById('sourceLang'),
+    inputText: document.getElementById('inputText'),
+    outputText: document.getElementById('outputText'),
+    translateButton: document.getElementById('translateButton')
   };
 
   // Tab switching
@@ -28,6 +32,10 @@ document.addEventListener('DOMContentLoaded', function() {
       this.classList.add('active');
       const tabId = this.getAttribute('data-tab') + '-tab';
       document.getElementById(tabId).classList.add('active');
+
+      // Ẩn/hiện nút saveButton dựa trên tab đang chọn
+      const currentTab = this.getAttribute('data-tab');
+      elements.saveButton.style.display = currentTab === 'translate' ? 'none' : 'block';
     });
   });
 
@@ -40,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
           elements.apiKeyInput.value = settings.apiKey;
           elements.chatGptModelSelect.value = settings.chatGptModel;
           elements.closeOnClickOutsideCheckbox.checked = settings.closeOnClickOutside;
+          elements.targetLangSelect.value = settings.targetLang;
 
           updateServiceInfo(settings.service);
         })
@@ -98,12 +107,55 @@ document.addEventListener('DOMContentLoaded', function() {
     elements.statusDiv.style.display = 'block';
   }
 
+  // Xử lý dịch văn bản
+  function handleTranslate() {
+    const text = elements.inputText.value.trim();
+    if (!text) {
+      showStatus('Vui lòng nhập văn bản cần dịch', 'error');
+      return;
+    }
+
+    // Disable nút dịch và hiển thị trạng thái đang dịch
+    elements.translateButton.disabled = true;
+    elements.translateButton.textContent = 'Đang dịch...';
+    elements.outputText.value = '';
+
+    // Gửi yêu cầu dịch
+    chrome.runtime.sendMessage({
+      action: 'translate',
+      text: text,
+      sourceLang: elements.sourceLangSelect.value,
+      targetLang: elements.targetLangSelect.value
+    }, (response) => {
+      elements.translateButton.disabled = false;
+      elements.translateButton.textContent = 'Dịch';
+
+      if (response) {
+        elements.outputText.value = response.translatedText;
+        showStatus('Dịch thành công!', 'success');
+      } else {
+        elements.outputText.value = 'Không thể dịch. Vui lòng thử lại.';
+        showStatus('Lỗi khi dịch', 'error');
+      }
+    });
+  }
+
   // Event listeners
   elements.serviceSelect.addEventListener('change', function() {
     updateServiceInfo(this.value);
   });
 
   elements.saveButton.addEventListener('click', saveSettings);
+
+  // Thêm event listener cho nút dịch
+  elements.translateButton.addEventListener('click', handleTranslate);
+
+  // Thêm event listener cho phím Enter trong ô input
+  elements.inputText.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && e.ctrlKey) {
+      handleTranslate();
+    }
+  });
 
   // Initialize
   loadSettings();

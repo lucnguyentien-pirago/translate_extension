@@ -183,7 +183,10 @@ function showTranslationDialog(originalText, translatedText, sourceLang, targetL
         <p style="margin: 0; padding: 10px; background: #9ca3af; border-radius: 4px; line-height: 1.5; white-space: pre-wrap; word-break: break-word;">${originalText}</p>
       </div>
       <div style="margin-bottom: 15px;">
-        <h3 style="font-size: 14px; color: #737373;">Bản dịch:</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 14px; color: #737373;">Bản dịch:</h3>
+          <button class="copy-btn" style="padding: 4px 8px; font-size: 12px; background: #4285f4; color: white; border: none; border-radius: 4px; cursor: pointer;">📋 Copy</button>
+        </div>
         <p style="margin: 0; padding: 10px; background: #9ca3af; border-radius: 4px; line-height: 1.5; white-space: pre-wrap; word-break: break-word;">${translatedText}</p>
       </div>
     </div>
@@ -196,6 +199,33 @@ function showTranslationDialog(originalText, translatedText, sourceLang, targetL
 
   // Close button handler
   dialog.querySelector('.close-btn').onclick = () => dialog.remove();
+
+  // Copy button handler
+  const copyBtn = dialog.querySelector('.copy-btn');
+  copyBtn.onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(translatedText);
+      // Thay đổi text và style của nút để hiển thị đã copy
+      copyBtn.textContent = '✓ Đã copy';
+      copyBtn.style.background = '#34a853';
+      
+      // Reset nút sau 2 giây
+      setTimeout(() => {
+        copyBtn.textContent = '📋 Copy';
+        copyBtn.style.background = '#4285f4';
+      }, 2000);
+    } catch (err) {
+      log('Lỗi khi copy:', err);
+      copyBtn.textContent = '❌ Lỗi';
+      copyBtn.style.background = '#ea4335';
+      
+      // Reset nút sau 2 giây
+      setTimeout(() => {
+        copyBtn.textContent = '📋 Copy';
+        copyBtn.style.background = '#4285f4';
+      }, 2000);
+    }
+  };
 
   // Tạo hàm xử lý click outside
   function closeOnClickOutside(e) {

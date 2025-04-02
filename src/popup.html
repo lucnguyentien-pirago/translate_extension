@@ -98,6 +98,41 @@
       font-size: 12px;
       color: #666;
     }
+
+    .translation-textarea {
+      width: 100%;
+      height: 150px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      resize: none;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-y: auto;
+    }
+
+    .translate-button {
+      background: #4285f4;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .translate-button:hover {
+      background: #3367d6;
+    }
+
+    .translate-button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -106,6 +141,7 @@
   <div class="tab-container">
     <div class="tab active" data-tab="general">Cài đặt chung</div>
     <div class="tab" data-tab="api">API</div>
+    <div class="tab" data-tab="translate">Dịch</div>
   </div>
   
   <div class="tab-content active" id="general-tab">
@@ -166,6 +202,63 @@
         <option value="gpt-4o">GPT-4o</option>
       </select>
     </div>
+  </div>
+  
+  <div class="tab-content" id="translate-tab">
+    <div class="form-group">
+      <label for="sourceLang">Ngôn ngữ nguồn:</label>
+      <select id="sourceLang">
+        <option value="auto">Tự động phát hiện</option>
+        <option value="vi">Tiếng Việt</option>
+        <option value="en">Tiếng Anh</option>
+        <option value="fr">Tiếng Pháp</option>
+        <option value="de">Tiếng Đức</option>
+        <option value="ja">Tiếng Nhật</option>
+        <option value="ko">Tiếng Hàn</option>
+        <option value="zh-CN">Tiếng Trung (Giản thể)</option>
+        <option value="zh-TW">Tiếng Trung (Phồn thể)</option>
+        <option value="es">Tiếng Tây Ban Nha</option>
+        <option value="it">Tiếng Ý</option>
+        <option value="ru">Tiếng Nga</option>
+        <option value="pt">Tiếng Bồ Đào Nha</option>
+        <option value="ar">Tiếng Ả Rập</option>
+        <option value="hi">Tiếng Hindi</option>
+        <option value="th">Tiếng Thái</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="targetLang">Ngôn ngữ đích:</label>
+      <select id="targetLang">
+        <option value="vi">Tiếng Việt</option>
+        <option value="en">Tiếng Anh</option>
+        <option value="fr">Tiếng Pháp</option>
+        <option value="de">Tiếng Đức</option>
+        <option value="ja">Tiếng Nhật</option>
+        <option value="ko">Tiếng Hàn</option>
+        <option value="zh-CN">Tiếng Trung (Giản thể)</option>
+        <option value="zh-TW">Tiếng Trung (Phồn thể)</option>
+        <option value="es">Tiếng Tây Ban Nha</option>
+        <option value="it">Tiếng Ý</option>
+        <option value="ru">Tiếng Nga</option>
+        <option value="pt">Tiếng Bồ Đào Nha</option>
+        <option value="ar">Tiếng Ả Rập</option>
+        <option value="hi">Tiếng Hindi</option>
+        <option value="th">Tiếng Thái</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="inputText">Văn bản cần dịch:</label>
+      <textarea id="inputText" class="translation-textarea" placeholder="Nhập văn bản cần dịch..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="outputText">Bản dịch:</label>
+      <textarea id="outputText" class="translation-textarea" readonly></textarea>
+    </div>
+
+    <button id="translateButton" class="translate-button">Dịch</button>
   </div>
   
   <button id="saveButton">Lưu cài đặt</button>
